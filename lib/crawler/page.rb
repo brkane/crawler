@@ -49,6 +49,13 @@ module Crawler
       resolve_relative_links links
     end
 
+    def title
+      title = ""
+      title_node = document.at_css('title')
+      title = title_node.content if title_node
+      title
+    end
+
     private
 
     def document

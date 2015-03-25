@@ -135,4 +135,28 @@ describe Crawler::Page do
       expect(page.images).to include("http://google.com/assets/awesome-image.png")
     end 
   end
+
+  describe 'titles' do
+
+    let(:url) { 'http://google.com/pricing/' }
+
+    it 'pulls out title if present in the page' do
+      title = 'Title!'
+      html = "<html><head><title>#{title}</title></head></html>"
+      response = Typhoeus::Response.new( code: 200, body: html )
+      Typhoeus.stub(url).and_return(response)
+
+      page = Crawler::Page.new url
+      expect(page.title).to eq title
+    end
+
+    it 'a blank title if cannot find one' do
+      html = "<html><head></head></html>"
+      response = Typhoeus::Response.new( code: 200, body: html )
+      Typhoeus.stub(url).and_return(response)
+
+      page = Crawler::Page.new url
+      expect(page.title).to eq ""
+    end
+  end
 end
