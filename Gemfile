@@ -9,4 +9,5 @@ group :test, :development do
   gem "rspec-mocks"
   gem "rake"
   gem "aruba"
+  gem "vcr"
 end
