@@ -23,7 +23,6 @@ module Crawler
 
     def links
       links = attributes_by_xpath('//a', 'href')
-      links = links.reject {|l| l.nil? || l.empty? }
       resolve_relative_links links
     end
 
@@ -83,14 +82,16 @@ module Crawler
     end
 
     def resolve_relative_link(link)
-      link_uri = URI.parse link
+      escaped_link = URI.escape link
+      link_uri = URI.parse escaped_link
       link_uri.scheme = uri.scheme unless link_uri.scheme
       link_uri.host = uri.host unless link_uri.host || link_uri.scheme == 'mailto'
       link_uri.to_s
     end
 
     def resolve_relative_links(links)
-      links.map {|l| resolve_relative_link l }
+      scrubbed_links = links.reject {|l| l.nil? || l.empty? }
+      scrubbed_links.map {|l| resolve_relative_link l }
     end
 
     def attributes_by_xpath(xpath, attribute_name)
