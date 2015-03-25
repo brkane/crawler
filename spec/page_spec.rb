@@ -100,4 +100,28 @@ describe Crawler::Page do
       expect(linked_page.html).to eq link_html
     end
   end
+
+  describe 'static assets' do
+
+    let(:url) { 'http://google.com/pricing/' }
+    let(:html) { '''
+      <html>
+        <head>
+          <script type="text/javascript" src="https://ssl.google-analytics.com/ga.js"></script>
+          <link rel="stylesheet" media="screen" href="/assets/application-0123456789.css">
+        </head>
+        <body>
+          <img src="/assets/awesome-image.png" alt="Awesome Image">
+        </body>
+      </html>
+    ''' }
+    subject(:page) { Crawler::Page.new url }
+
+    it 'can list javascript files' do
+      response = Typhoeus::Response.new( code: 200, body: html )
+      Typhoeus.stub(url).and_return(response)
+
+      expect(page.javascripts).to include("https://ssl.google-analytics.com/ga.js")
+    end
+  end
 end

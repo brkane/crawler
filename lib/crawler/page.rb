@@ -34,6 +34,12 @@ module Crawler
       @response.request.base_url
     end
 
+    def javascripts
+      document.xpath('//script[@type="text/javascript"]').map do |script_node|
+        script_node.get 'src'
+      end
+    end
+
     private
 
     def document
