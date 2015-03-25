@@ -1,4 +1,5 @@
 require 'typhoeus'
+require 'oga'
 
 module Crawler
 
@@ -11,6 +12,24 @@ module Crawler
 
     def html
       @response.body
+    end
+
+    def linked_pages
+      links.map do |link|
+        Page.new link
+      end
+    end
+
+    def links
+      document.xpath('//a').map do |link_node|
+        link_node.get 'href'
+      end
+    end
+
+    private
+
+    def document
+      @document ||= Oga.parse_html html
     end
   end
 end

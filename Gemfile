@@ -1,6 +1,7 @@
 source "https://rubygems.org"
 
 gem "typhoeus"
+gem "oga"
 
 group :test, :development do
   gem "rspec-core"
