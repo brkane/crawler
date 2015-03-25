@@ -29,12 +29,14 @@ describe Crawler do
       end
     end
 
-    it 'contains one <div> per page', :vcr do
-      pending "Transition to JSON"
+    it 'indexes a page only once' do
       VCR.use_cassette('site_map') do
         crawler = Crawler.new url
-        site_map = Nokogiri::HTML crawler.site_map
-        expect(site_map.xpath('//div').count).to eq 14
+        site_map = JSON.parse crawler.site_map
+        base_pages = site_map['pages'].select do |page|
+          page['url'] == url
+        end
+        expect(base_pages.count).to eq 1
       end
     end
   end

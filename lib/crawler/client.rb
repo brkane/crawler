@@ -1,18 +1,33 @@
+require 'json'
 
 module Crawler
 
   class Client
 
     def initialize(url)
-      @page = Page.new url
+      @base_url = url
     end
 
     def site_map
-      pages.to_json
+      JSON.pretty_generate( { 'pages' => pages } )
     end
 
     def pages
-      @page.linked_pages
+      @visited_pages ||= {}
+      visit_page @base_url
+      @visited_pages.keys.map do |key|
+        @visited_pages[key]
+      end  
+    end
+
+    def visit_page(url)
+      return if @visited_pages[url]
+
+      page = Page.new url
+      @visited_pages[url] = page
+      page.local_links.each do |link|
+        visit_page link
+      end
     end
   end
 end
