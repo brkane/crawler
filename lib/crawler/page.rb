@@ -16,10 +16,6 @@ module Crawler
     end
 
     def linked_pages
-      local_links = links.select do |link|
-        link_uri = URI.parse resolve_relative_link(link)
-        uri.host == link_uri.host
-      end
       local_links.map do |link|
         Page.new resolve_relative_link(link)
       end
@@ -29,6 +25,13 @@ module Crawler
       links = attributes_by_xpath('//a', 'href')
       links = links.reject {|l| l.nil? || l.empty? }
       resolve_relative_links links
+    end
+
+    def local_links
+      links.select do |link|
+        link_uri = URI.parse link
+        uri.host == link_uri.host
+      end
     end
 
     def url
