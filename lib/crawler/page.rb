@@ -36,7 +36,15 @@ module Crawler
 
     def javascripts
       document.xpath('//script[@type="text/javascript"]').map do |script_node|
-        script_node.get 'src'
+        link = script_node.get 'src'
+        resolve_relative_link link
+      end
+    end
+
+    def stylesheets
+      document.xpath('//link[@rel="stylesheet"]').map do |stylesheet_node|
+        link = stylesheet_node.get 'href'
+        resolve_relative_link link
       end
     end
 

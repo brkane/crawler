@@ -117,11 +117,18 @@ describe Crawler::Page do
     ''' }
     subject(:page) { Crawler::Page.new url }
 
-    it 'can list javascript files' do
+    it 'can list javascript references' do
       response = Typhoeus::Response.new( code: 200, body: html )
       Typhoeus.stub(url).and_return(response)
 
       expect(page.javascripts).to include("https://ssl.google-analytics.com/ga.js")
+    end
+
+    it 'can list CSS references' do
+      response = Typhoeus::Response.new( code: 200, body: html )
+      Typhoeus.stub(url).and_return(response)
+
+      expect(page.stylesheets).to include("http://google.com/assets/application-0123456789.css")
     end
   end
 end
