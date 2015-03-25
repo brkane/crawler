@@ -35,17 +35,18 @@ module Crawler
     end
 
     def javascripts
-      document.xpath('//script[@type="text/javascript"]').map do |script_node|
-        link = script_node.get 'src'
-        resolve_relative_link link
-      end
+      links = attributes_by_xpath('//script[@type="text/javascript"]', 'src')
+      resolve_relative_links links
     end
 
     def stylesheets
-      document.xpath('//link[@rel="stylesheet"]').map do |stylesheet_node|
-        link = stylesheet_node.get 'href'
-        resolve_relative_link link
-      end
+      links = attributes_by_xpath('//link[@rel="stylesheet"]', 'href')
+      resolve_relative_links links
+    end
+
+    def images
+      links = attributes_by_xpath('//img', 'src')
+      resolve_relative_links links
     end
 
     private
@@ -63,6 +64,16 @@ module Crawler
       link_uri.scheme = uri.scheme unless link_uri.scheme
       link_uri.host = uri.host unless link_uri.host
       link_uri.to_s
+    end
+
+    def resolve_relative_links(links)
+      links.map {|l| resolve_relative_link l }
+    end
+
+    def attributes_by_xpath(xpath, attribute_name)
+      document.xpath(xpath).map do |node|
+        node.get attribute_name
+      end
     end
   end
 end
