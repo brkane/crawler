@@ -15,5 +15,17 @@ describe Crawler::Page do
 
       expect(page.html).to eq html
     end
+
+    it 'follows redirects transparently' do
+      redirect_url = 'https://google.com/'
+      redirect_response = Typhoeus::Response.new( 
+        code: 301, headers: { "Location" => redirect_url }
+      )
+      response = Typhoeus::Response.new( code: 200, body: html )
+      Typhoeus.stub(url).and_return(redirect_response)
+      Typhoeus.stub(redirect_url).and_return(response)
+
+      expect(page.html).to eq html
+    end
   end
 end
