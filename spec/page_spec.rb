@@ -99,6 +99,15 @@ describe Crawler::Page do
       linked_page = page.linked_pages.first
       expect(linked_page.html).to eq link_html
     end
+
+    it 'includes links for mailto' do
+      base_html = '<html><a href="mailto:webmaster@google.com">Mail me</a></html>'
+
+      base_response = Typhoeus::Response.new( code: 200, body: base_html )
+      Typhoeus.stub(base_url).and_return(base_response)
+
+      expect(page.links).to include('mailto:webmaster@google.com')
+    end
   end
 
   describe 'static assets' do

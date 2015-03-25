@@ -27,6 +27,7 @@ module Crawler
 
     def links
       links = attributes_by_xpath('//a', 'href')
+      links = links.reject {|l| l.nil? || l.empty? }
       resolve_relative_links links
     end
 
@@ -69,7 +70,7 @@ module Crawler
     def resolve_relative_link(link)
       link_uri = URI.parse link
       link_uri.scheme = uri.scheme unless link_uri.scheme
-      link_uri.host = uri.host unless link_uri.host
+      link_uri.host = uri.host unless link_uri.host || link_uri.scheme == 'mailto'
       link_uri.to_s
     end
 
