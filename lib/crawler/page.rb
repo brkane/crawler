@@ -17,7 +17,7 @@ module Crawler
 
     def linked_pages
       local_links.map do |link|
-        Page.new resolve_relative_link(link)
+        Page.new link
       end
     end
 
