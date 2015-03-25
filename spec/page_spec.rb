@@ -66,5 +66,24 @@ describe Crawler::Page do
 
       expect(remote_domain_pages).to be_empty
     end
+
+    it 'does not generate pages for links in different subdomains' do
+      base_html = '<html><a href="http://links.google.com/pricing/">Pricing</a></html>'
+      link_url  = 'http://links.google.com/pricing/'
+      link_html = '<html>Pricing Page</html>'
+
+      base_response = Typhoeus::Response.new( code: 200, body: base_html )
+      Typhoeus.stub(base_url).and_return(base_response)
+      link_response = Typhoeus::Response.new( code: 200, body: link_html )
+      Typhoeus.stub(link_url).and_return(link_response)
+
+      remote_domain_pages = page.linked_pages.reject do |linked_page|
+        page_uri = URI.parse(page.url)
+        linked_uri = URI.parse(linked_page.url)
+        page_uri.host == linked_uri.host
+      end
+
+      expect(remote_domain_pages).to be_empty
+    end
   end
 end
