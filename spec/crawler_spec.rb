@@ -21,15 +21,16 @@ describe Crawler do
 
   describe 'site map generation' do
 
-    it 'generates an HTML document' do
+    it 'generates a JSON document' do
       VCR.use_cassette('site_map') do
         crawler = Crawler.new url
         site_map = crawler.site_map
-        expect { Nokogiri::HTML site_map }.to_not raise_error
+        expect { JSON.parse site_map }.to_not raise_error
       end
     end
 
     it 'contains one <div> per page', :vcr do
+      pending "Transition to JSON"
       VCR.use_cassette('site_map') do
         crawler = Crawler.new url
         site_map = Nokogiri::HTML crawler.site_map

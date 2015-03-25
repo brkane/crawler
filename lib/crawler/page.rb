@@ -57,6 +57,18 @@ module Crawler
       title
     end
 
+    def to_json(options = {})
+      hash = { 
+        'title' => title,
+        'url'   => url,
+        'links' => links,
+        'javascripts' => javascripts,
+        'stylesheets' => stylesheets,
+        'images'      => images
+      }
+      JSON.pretty_generate(hash, options)
+    end
+
     private
 
     def document

@@ -8,13 +8,7 @@ module Crawler
     end
 
     def site_map
-      doc = StringIO.new
-      doc << '<html>'
-      pages.each do |page|
-        doc << "<div id=\"#{page.url}\" title=\"#{page.title}\"></div>"
-      end
-      doc << '</html>'
-      doc.string
+      pages.to_json
     end
 
     def pages

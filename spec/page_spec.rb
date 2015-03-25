@@ -168,4 +168,53 @@ describe Crawler::Page do
       expect(page.title).to eq ""
     end
   end
+
+  describe 'json serialization' do
+
+    let(:url) { 'http://google.com/pricing/' }
+    let(:html) { '''
+      <html>
+        <head>
+          <title>Pricing page</title>
+          <script type="text/javascript" src="https://ssl.google-analytics.com/ga.js"></script>
+          <link rel="stylesheet" media="screen" href="/assets/application-0123456789.css">
+        </head>
+        <body>
+          <img src="/assets/awesome-image.png" alt="Awesome Image">
+          <a href="/about/">About us</a>
+        </body>
+      </html>
+    ''' }
+    let(:page) { Crawler::Page.new url }
+    subject(:json) { JSON.parse page.to_json }
+
+    before(:each) do
+      response = Typhoeus::Response.new( code: 200, body: html )
+      Typhoeus.stub(url).and_return(response)
+    end
+
+    it 'includes title' do
+      expect(json['title']).to eq 'Pricing page'
+    end
+
+    it 'includes url' do
+      expect(json['url']).to eq 'http://google.com/pricing/'
+    end
+
+    it 'includes links' do
+      expect(json['links']).to include('http://google.com/about/')
+    end
+
+    it 'includes javascripts' do
+      expect(json['javascripts']).to include('https://ssl.google-analytics.com/ga.js')
+    end
+
+    it 'includes stylesheets' do
+      expect(json['stylesheets']).to include('http://google.com/assets/application-0123456789.css')
+    end
+
+    it 'includes images' do
+      expect(json['images']).to include('http://google.com/assets/awesome-image.png')
+    end
+  end
 end
