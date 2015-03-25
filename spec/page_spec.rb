@@ -85,5 +85,19 @@ describe Crawler::Page do
 
       expect(remote_domain_pages).to be_empty
     end
+
+    it 'uses the current page uri scheme + host if link is relative' do
+      base_html = '<html><a href="/pricing/">Pricing</a></html>'
+      link_url  = 'http://google.com/pricing/'
+      link_html = '<html>Pricing Page</html>'
+
+      base_response = Typhoeus::Response.new( code: 200, body: base_html )
+      Typhoeus.stub(base_url).and_return(base_response)
+      link_response = Typhoeus::Response.new( code: 200, body: link_html )
+      Typhoeus.stub(link_url).and_return(link_response)
+
+      linked_page = page.linked_pages.first
+      expect(linked_page.html).to eq link_html
+    end
   end
 end

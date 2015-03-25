@@ -16,11 +16,11 @@ module Crawler
 
     def linked_pages
       local_links = links.select do |link|
-        link_uri = URI.parse link
+        link_uri = URI.parse resolve_relative_link(link)
         uri.host == link_uri.host
       end
       local_links.map do |link|
-        Page.new link
+        Page.new resolve_relative_link(link)
       end
     end
 
@@ -42,6 +42,13 @@ module Crawler
 
     def uri
       URI.parse url
+    end
+
+    def resolve_relative_link(link)
+      link_uri = URI.parse link
+      link_uri.scheme = uri.scheme unless link_uri.scheme
+      link_uri.host = uri.host unless link_uri.host
+      link_uri.to_s
     end
   end
 end
