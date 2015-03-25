@@ -1,5 +1,6 @@
 require 'typhoeus'
-require 'oga'
+require 'nokogiri'
+require 'uri'
 
 module Crawler
 
@@ -25,9 +26,8 @@ module Crawler
     end
 
     def links
-      document.xpath('//a').map do |link_node|
-        link_node.get 'href'
-      end
+      links = attributes_by_xpath('//a', 'href')
+      resolve_relative_links links
     end
 
     def url
@@ -52,7 +52,7 @@ module Crawler
     private
 
     def document
-      @document ||= Oga.parse_html html
+      @document ||= Nokogiri::HTML html
     end
 
     def uri
@@ -72,7 +72,7 @@ module Crawler
 
     def attributes_by_xpath(xpath, attribute_name)
       document.xpath(xpath).map do |node|
-        node.get attribute_name
+        node[attribute_name]
       end
     end
   end

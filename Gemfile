@@ -1,7 +1,7 @@
 source "https://rubygems.org"
 
 gem "typhoeus"
-gem "oga"
+gem "nokogiri"
 
 group :test, :development do
   gem "rspec-core"
