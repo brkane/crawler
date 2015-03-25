@@ -15,7 +15,11 @@ module Crawler
     end
 
     def linked_pages
-      links.map do |link|
+      local_links = links.select do |link|
+        link_uri = URI.parse link
+        uri.host == link_uri.host
+      end
+      local_links.map do |link|
         Page.new link
       end
     end
@@ -26,10 +30,18 @@ module Crawler
       end
     end
 
+    def url
+      @response.request.base_url
+    end
+
     private
 
     def document
       @document ||= Oga.parse_html html
+    end
+
+    def uri
+      URI.parse url
     end
   end
 end
