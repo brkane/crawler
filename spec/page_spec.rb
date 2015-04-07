@@ -27,6 +27,27 @@ describe Crawler::Page do
 
       expect(page.html).to eq html
     end
+
+    it 'does not follow more than 3 redirects' do
+      redirect_url = 'https://google.com/'
+      redirect_response = Typhoeus::Response.new(
+        code: 301, headers: { "Location" => redirect_url }
+      )
+      Typhoeus.stub(url).and_return(redirect_response)
+      Typhoeus.stub(redirect_url).and_return(redirect_response)
+
+      expect(page.html).to be_empty
+    end
+
+    it 'strips off any query or fragment portions of the URI' do
+      url = 'http://google.com/?q=12345'
+      stripped_url = 'http://google.com/'
+      response = Typhoeus::Response.new( code: 200, body: html )
+      Typhoeus.stub(stripped_url).and_return(response)
+      page = Crawler::Page.new url
+
+      expect(page.url).to eq stripped_url
+    end
   end
 
   describe 'links' do

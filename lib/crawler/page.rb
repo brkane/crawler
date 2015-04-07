@@ -6,13 +6,23 @@ module Crawler
 
   class Page
 
+    attr_reader :url
+
     def initialize(url)
-      @response = Typhoeus.get url
-      @response = Typhoeus.get @response.headers["Location"] if @response.code == 301
+      uri = URI.parse url
+      @url = "#{uri.scheme}://#{uri.host}#{uri.path}"
+
+      redirects = 0
+      @response = Typhoeus.get @url
+      while @response.code == 301 && redirects <= 3
+        @response = Typhoeus.get @response.headers['Location']
+        redirects += 1
+      end
+      @url = @response.request.url
     end
 
     def html
-      @response.body
+      @response.body || ""
     end
 
     def linked_pages
@@ -31,10 +41,6 @@ module Crawler
         link_uri = URI.parse link
         uri.host == link_uri.host
       end
-    end
-
-    def url
-      @response.request.base_url
     end
 
     def javascripts
