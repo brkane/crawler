@@ -44,7 +44,7 @@ module Crawler
     end
 
     def javascripts
-      links = attributes_by_xpath('//script[@type="text/javascript"]', 'src')
+      links = attributes_by_xpath('//script', 'src')
       resolve_relative_links links
     end
 
@@ -100,8 +100,7 @@ module Crawler
     end
 
     def resolve_relative_links(links)
-      resolved_links = links.map {|l| resolve_relative_link l }
-      resolved_links.reject {|l| l.empty? }
+      links.reject {|l| l.empty? }.map {|l| resolve_relative_link l }
     end
 
     def attributes_by_xpath(xpath, attribute_name)
