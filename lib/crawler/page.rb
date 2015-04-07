@@ -88,21 +88,25 @@ module Crawler
     end
 
     def resolve_relative_link(link)
-      escaped_link = URI.escape link
-      link_uri = URI.parse escaped_link
-      link_uri.scheme = uri.scheme unless link_uri.scheme
-      link_uri.host = uri.host unless link_uri.host || link_uri.scheme == 'mailto'
-      link_uri.to_s
+      begin
+        escaped_link = URI.escape link
+        link_uri = URI.parse escaped_link
+        link_uri.scheme = uri.scheme unless link_uri.scheme
+        link_uri.host = uri.host unless link_uri.host || link_uri.scheme == 'mailto'
+        link_uri.to_s
+      rescue URI::InvalidURIError => e
+        ""
+      end
     end
 
     def resolve_relative_links(links)
-      scrubbed_links = links.reject {|l| l.nil? || l.empty? }
-      scrubbed_links.map {|l| resolve_relative_link l }
+      resolved_links = links.map {|l| resolve_relative_link l }
+      resolved_links.reject {|l| l.empty? }
     end
 
     def attributes_by_xpath(xpath, attribute_name)
       document.xpath(xpath).map do |node|
-        node[attribute_name]
+        node[attribute_name] || ""
       end
     end
   end

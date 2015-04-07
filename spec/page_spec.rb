@@ -129,6 +129,14 @@ describe Crawler::Page do
 
       expect(page.links).to include('mailto:webmaster@google.com')
     end
+
+    it 'discards improperly formatted links' do
+      base_html = '<html><a href=""”https://google.com/pricing/”"">Pricing page </a></html>'
+      base_response = Typhoeus::Response.new( code: 200, body: base_html )
+      Typhoeus.stub(base_url).and_return(base_response)
+
+      expect(page.links).to_not include('"”https://google.com/pricing/”"')
+    end
   end
 
   describe 'static assets' do
