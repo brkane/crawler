@@ -11,7 +11,7 @@ end
 
 describe Crawler do
 
-  let(:url) { 'http://xkcd.com' }
+  let(:url) { 'https://truefn.com/' }
 
   it 'accepts a URL' do
     VCR.use_cassette('site_map') do
