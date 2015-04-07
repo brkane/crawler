@@ -14,19 +14,18 @@ module Crawler
 
     def pages
       @visited_pages ||= {}
-      visit_page @base_url
+      visit_page Page.new(@base_url)
       @visited_pages.keys.map do |key|
         @visited_pages[key]
       end  
     end
 
-    def visit_page(url)
-      return if @visited_pages[url]
+    def visit_page(page)
+      return if @visited_pages[page.url]
 
-      page = Page.new url
-      @visited_pages[url] = page
-      page.local_links.each do |link|
-        visit_page link
+      @visited_pages[page.url] = page
+      page.linked_pages.each do |page|
+        visit_page page
       end
     end
   end
